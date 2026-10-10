@@ -1,5 +1,7 @@
 package Abstraction;
 
+import java.util.Collections;
+
 public class Stack {
 
     static class StackImplementation {
