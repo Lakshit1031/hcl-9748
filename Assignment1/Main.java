@@ -16,7 +16,7 @@ class Employee {
         this.name = name;
         this.role = role;
         this.basic = basic;
-        this.hra = hra;
+        this.hra = hra
     }
 
     void calculateBonus() {
