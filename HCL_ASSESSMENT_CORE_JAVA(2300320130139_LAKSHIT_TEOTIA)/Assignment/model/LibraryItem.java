@@ -1,6 +1,5 @@
 package Assignment.model;
-
-public abstract class LibraryItem {
+abstract class LibraryItem {
 
     private static int counter = 1001;
 
@@ -42,3 +41,4 @@ public abstract class LibraryItem {
         this.available = available;
     }
 }
+
