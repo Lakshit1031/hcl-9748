@@ -1,8 +1,8 @@
-package Assignment.exception;
-
-public class LibraryException extends Exception {
-
-    public LibraryException(String message) {
-        super(message);
-    }
-}
+//package Assignment.exception;
+//
+//public class LibraryException extends Exception {
+//
+//    public LibraryException(String message) {
+//        super(message);
+//    }
+//}

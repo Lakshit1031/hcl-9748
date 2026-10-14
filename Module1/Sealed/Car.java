@@ -1,4 +1,8 @@
 package Sealed;
 
-public class Car {
+public final class Car extends Vehicle {
+
+    public void carInfo() {
+        System.out.println("This is a car");
+    }
 }
