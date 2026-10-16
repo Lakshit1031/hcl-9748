@@ -9,10 +9,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(Employee.class);
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(Employee.class);
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
-        Employee empl = context.getBean(Employee.class);
-        empl.display();
+        Employee emp1 = ctx.getBean(Employee.class);
+        emp1.display();
+        Employee emp2 = ctx.getBean(Employee.class);
+        emp2.display();
+        System.out.println(emp1.hashCode() == emp2.hashCode());
         }
     }
