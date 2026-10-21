@@ -16,6 +16,13 @@
             <version>6.1.14</version> <!-- Replace with your required version -->
         </dependency>
 
+        <!-- Source: https://mvnrepository.com/artifact/jakarta.annotation/jakarta.annotation-api -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>3.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>
