@@ -5,15 +5,9 @@ import java.util.List;
 
 public interface EmpRepo {
     String addemp(Employee emp);
-
     List<Employee> getEmp();
-
-    Employee getEmpById(long emp_id);
-
-    Employee deleteById(long emp_id);
-
-    String updateById(long emp_id, Employee updateEmp);
-
-    // Add employees in bulk
-    String addEmpBulk(List<Employee> employees);
+    String addEmpbulk();
+    Employee getEmpById(long empid);
+    String deleteById(long empid);
+    String updateById(long empid, Employee updatedEmp);
 }

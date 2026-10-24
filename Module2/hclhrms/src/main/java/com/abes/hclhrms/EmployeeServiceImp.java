@@ -1,6 +1,7 @@
 package com.abes.hclhrms;
 
 import com.abes.hclhrms.entity.Employee;
+import com.abes.hclhrms.repository.EmpRepo;
 import com.abes.hclhrms.repository.EmpRepoImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,31 +12,32 @@ import java.util.List;
 public class EmployeeServiceImp {
 
     @Autowired
-    private EmpRepoImp empRepo;
+    private EmpRepo emprepo;
 
-    public String addEmp() {
+    public String addEmp(){
+        Employee emp1 = new Employee(200l, "Abhay", "FSD", "Java","abhay123@gmail.com");
+        return emprepo.addemp(emp1);
+    }
+    public List<Employee> getEmp(){
+        return emprepo.getEmp();
+    }
+    public Employee getEmpId(){
+        return emprepo.getEmpById(102l);
+    }
+    public String addEmpBulk(){
+        return emprepo.addEmpbulk();
+    }
+    public String deleteEmpById(){
+        return emprepo.deleteById(200l);
+    }
+    public String updateById() {
         Employee emp = new Employee(
-                101L,
-                "John Doe",
+                200l,
+                "Lakshit",
                 "FSD",
                 "Java",
-                "john.doe@example.com"
+                "lakshit@gmail.com"
         );
-
-        return empRepo.addemp(emp);
-    }
-
-    public List<Employee> getEmp() {
-        return empRepo.getEmp();
-    }
-
-    // Get employee by ID
-    public Employee getEmpById(long emp_id) {
-        return empRepo.getEmpById(emp_id);
-    }
-
-    // Add employees in bulk
-    public String addEmpBulk(List<Employee> employees) {
-        return empRepo.addEmpBulk(employees);
+        return emprepo.updateById(200l, emp);
     }
 }

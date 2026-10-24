@@ -12,31 +12,32 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeServiceImp employeeServiceImp;
-
     @GetMapping("/")
-    public String welcome() {
-        return "<h2 style='color:red'>Welcome to HRMS Application</h2>";
+    public String welcomeMsg(){
+        return "Welcome to ABES HRMS";
     }
-
     @GetMapping("/addemp")
-    public String addemp() {
+    public String addnewEmployee(){
         return employeeServiceImp.addEmp();
     }
-
     @GetMapping("/getemp")
-    public List<Employee> getemp() {
+    public List<Employee> getEmp(){
         return employeeServiceImp.getEmp();
     }
-
-    // Get employee by ID
-    @GetMapping("/getemp/{id}")
-    public Employee getEmpById(@PathVariable("id") long emp_id) {
-        return employeeServiceImp.getEmpById(emp_id);
+    @GetMapping("/id")
+    public Employee getempById(){
+        return employeeServiceImp.getEmpId();
     }
-
-    // Add employees in bulk
-    @PostMapping("/addemp/bulk")
-    public String addEmpBulk(@RequestBody List<Employee> employees) {
-        return employeeServiceImp.addEmpBulk(employees);
+    @GetMapping("/bulk")
+    public String addEmpBulk(){
+        return employeeServiceImp.addEmpBulk();
+    }
+    @DeleteMapping("/delete")
+    public String deleteEmpById(){
+        return employeeServiceImp.deleteEmpById();
+    }
+    @PutMapping("/update")
+    public String updateById(){
+        return employeeServiceImp.updateById();
     }
 }

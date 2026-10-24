@@ -9,53 +9,54 @@ import java.util.List;
 @Repository
 public class EmpRepoImp implements EmpRepo {
 
-    private final List<Employee> emplist = new ArrayList<>();
-
+    List<Employee> emplist = new ArrayList<>();
     @Override
     public String addemp(Employee emp) {
         emplist.add(emp);
-        return "Employee added successfully";
+        return "Employee Added Successfully";
     }
 
     @Override
     public List<Employee> getEmp() {
-        return new ArrayList<>(emplist);
+        return emplist;
     }
 
     @Override
-    public Employee getEmpById(long emp_id) {
-        for (Employee emp : emplist) {
-            if (emp.getEmp_id() == emp_id) {
-                return emp;
-            }
+    public String addEmpbulk() {
+        List<Employee> bulkEmployees = List.of(
+                new Employee(100, "Ankush", "Student", "FSD", "ankush7380@gmail.com"),
+                new Employee(101, "Ashish", "Developer", "Java", "ashish@gmail.com"),
+                new Employee(102, "Amitabh", "Tester", "java", "abhay@gmail.com"),
+                new Employee(103, "Isahan", "FSD", "Java", "ishan@gmail.com")
+        );
+        emplist.addAll(bulkEmployees);
+        return bulkEmployees.size() + " employees added successfully";
+    }
+
+    @Override
+    public Employee getEmpById(long empid) {
+        return emplist.stream().filter(e->e.getEmp_id() == empid).findFirst().orElse(null);
+    }
+
+    @Override
+    public String deleteById(long empid) {
+        boolean status = false;
+        if (getEmpById(empid) != null){
+            status = emplist.removeIf(e->e.getEmp_id()==empid);
         }
-        return null;
-    }
-
-    @Override
-    public Employee deleteById(long emp_id) {
-        for (int i = 0; i < emplist.size(); i++) {
-            if (emplist.get(i).getEmp_id() == emp_id) {
-                return emplist.remove(i);
-            }
+        if (status){
+            return "Employee Deleted Successfully";
         }
-        return null;
+        return "Employee is not Registered with id" + empid;
     }
 
     @Override
-    public String updateById(long emp_id, Employee updateEmp) {
-        for (int i = 0; i < emplist.size(); i++) {
-            if (emplist.get(i).getEmp_id() == emp_id) {
-                emplist.set(i, updateEmp);
-                return "Employee updated successfully";
-            }
+    public String updateById(long empid, Employee updatedEmp) {
+        if(getEmpById(empid) != null){
+            emplist.removeIf(e -> e.getEmp_id() == empid);
+            emplist.add(updatedEmp);
+            return "Employee Updated Successfully";
         }
-        return "Employee not found";
-    }
-
-    @Override
-    public String addEmpBulk(List<Employee> employees) {
-        emplist.addAll(employees);
-        return employees.size() + " employees added successfully";
+        return "Employee is not Registered with id " + empid;
     }
 }
