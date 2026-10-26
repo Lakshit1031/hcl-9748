@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
+    @CrossOrigin(origins = "http://localhost:5173/")
 
     @GetMapping("/")
     public String msg(){
