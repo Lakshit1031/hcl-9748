@@ -1,3 +1,4 @@
+
 package com.abes.hrmsdatabase.controller;
 
 import com.abes.hrmsdatabase.model.Employee;
@@ -6,34 +7,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/v1/user")
 public class EmployeeController {
+
     @Autowired
     private EmployeeService employeeService;
-    @CrossOrigin(origins = "http://localhost:5173/")
 
-    @GetMapping("/")
-    public String msg(){
+    @GetMapping({"", "/"})
+    public String msg() {
         return "<h2>Welcome to Springboot HRMS Database Application</h2>";
     }
 
-    @GetMapping("/create")
-    public String addnewEmployee() {
-        return employeeService.createnewEmployee();
+    @PostMapping("/register")
+    public String addnewEmployee(@RequestBody Employee employee) {
+        System.out.println(employee.getEmail());
+        return employeeService.createnewEmployee(employee);
     }
 
-    @GetMapping("findbyid/{emp_id}")
+    @GetMapping("/findbyid/{emp_id}")
     public Employee getEmpByEmpId(@PathVariable long emp_id) {
-        System.out.println(emp_id);
         return employeeService.getEmployeeById(emp_id);
     }
 
-    @DeleteMapping("delete/{emp_id}")
+    @DeleteMapping("/delete/{emp_id}")
     public String deleteEmployee(@PathVariable long emp_id) {
         return employeeService.deleteById(emp_id);
     }
 
-    @PutMapping("update/{emp_id}")
-    public String updateById(@PathVariable long emp_id) {
-        return employeeService.updateById(emp_id);
+    @PutMapping("/update/{emp_id}")
+    public String updateById(
+            @PathVariable long emp_id,
+            @RequestBody Employee employee) {
+        return employeeService.updateById(emp_id, employee);
     }
 }
