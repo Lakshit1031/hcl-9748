@@ -3,13 +3,14 @@ package com.abes.hrmsdatabase.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "employees")
 public class Employee {
 
     @Id
     private long emp_id;
-
     private String emp_name;
     private String designation;
     private String stack;
