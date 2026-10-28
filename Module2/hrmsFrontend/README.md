@@ -1,16 +1,9 @@
-# React + Vite
+# PeopleFlow HRMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Run locally
 
-Currently, two official plugins are available:
+Requires Java 17 and Node.js 20.19+ (or 22.12+). From `hrmsdatabase`, run `./mvnw spring-boot:run` (Windows: `mvnw.cmd spring-boot:run`). In another terminal, from `hrmsFrontend`, run `npm install` and `npm run dev`. Open http://localhost:5173.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The frontend proxies `/api` to the backend at port 8080, so session cookies work on the same origin. Registration signs in immediately; login uses the employee ID and password. The dashboard reads the current employee's attendance, checks in once per day, and checks out. Dates and times use Asia/Kolkata. Local data persists in `hrmsdatabase/hrms-data.mv.db` (H2). To use MySQL instead, set `DB_USERNAME`, `DB_PASSWORD` and optionally `DB_URL`, then run with `--spring.profiles.active=mysql`. Existing plaintext passwords are upgraded to PBKDF2 on successful login.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Do not expose this development app directly to the public internet without adding production authentication hardening, CSRF protection, HTTPS and an appropriate deployment configuration.

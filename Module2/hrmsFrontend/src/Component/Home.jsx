@@ -1,9 +1,4 @@
-import React from 'react'
-
-function Home() {
-  return (
-    <div>Home</div>
-  )
+import { Link } from 'react-router-dom'
+export default function Home() {
+  return <main className="landing"><header><div className="brand">● <span>people<span className="brand-accent">flow</span></span></div><nav><Link to="/login">Sign in</Link><Link className="primary" to="/registration">Get started →</Link></nav></header><section className="landing-hero"><span className="eyebrow">A CLEARER WORKDAY</span><h1>Make every day <em>count.</em></h1><p>A simple place to check in, track your attendance, and stay connected to your work.</p><div className="hero-actions"><Link className="primary" to="/registration">Create your account →</Link><Link className="secondary" to="/login">I already have an account</Link></div></section><div className="landing-note">YOUR DAY AT A GLANCE <span>·</span> CHECK IN & OUT <span>·</span> ATTENDANCE HISTORY</div></main>
 }
-
-export default Home

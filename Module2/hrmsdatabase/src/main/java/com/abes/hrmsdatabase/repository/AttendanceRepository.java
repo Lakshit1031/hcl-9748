@@ -1,17 +1,13 @@
-
 package com.abes.hrmsdatabase.repository;
 
 import com.abes.hrmsdatabase.model.Attendance;
 import com.abes.hrmsdatabase.model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface AttendanceRepository
-        extends JpaRepository<Attendance, Long> {
-
-    boolean existsByEmployeeAndAttendanceDate(
-            Employee employee, LocalDate attendanceDate);
+public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+    Optional<Attendance> findByEmployeeAndAttendanceDate(Employee employee, LocalDate date);
+    List<Attendance> findByEmployeeOrderByAttendanceDateDesc(Employee employee);
 }

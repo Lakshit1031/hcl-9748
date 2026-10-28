@@ -3,6 +3,8 @@ package com.abes.hrmsdatabase.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,6 +16,7 @@ public class Employee {
     private String emp_name;
     private String designation;
     private String stack;
+    @Column(unique = true)
     private String email;
     private String password;
 

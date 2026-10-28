@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/data/
+
+/hrms-data.mv.db
+/hrms-data.trace.db

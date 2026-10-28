@@ -2,13 +2,10 @@ package com.abes.hrmsdatabase.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Column;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity(name="attendance")
+@Entity
+@Table(name = "attendance", uniqueConstraints = @UniqueConstraint(columnNames = {"emp_id", "attendance_date"}))
 public class Attendance {
 
     public Attendance(){

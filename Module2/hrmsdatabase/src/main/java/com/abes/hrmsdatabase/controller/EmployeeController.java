@@ -1,44 +1,50 @@
-
 package com.abes.hrmsdatabase.controller;
 
 import com.abes.hrmsdatabase.model.Employee;
 import com.abes.hrmsdatabase.service.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/v1/user")
 public class EmployeeController {
-
-    @Autowired
-    private EmployeeService employeeService;
-
-    @GetMapping({"", "/"})
-    public String msg() {
-        return "<h2>Welcome to Springboot HRMS Database Application</h2>";
+    private final EmployeeService employees;
+    public EmployeeController(EmployeeService employees) { this.employees = employees; }
+    public record LoginRequest(long emp_id, String password) {}
+    public record EmployeeView(long emp_id, String emp_name, String designation, String stack, String email) {
+        public static EmployeeView of(Employee e) { return new EmployeeView(e.getEmp_id(), e.getEmp_name(), e.getDesignation(), e.getStack(), e.getEmail()); }
     }
 
     @PostMapping("/register")
-    public String addnewEmployee(@RequestBody Employee employee) {
-        System.out.println(employee.getEmail());
-        return employeeService.createnewEmployee(employee);
+    public EmployeeView register(@RequestBody Employee input, HttpServletRequest request) {
+        Employee employee = employees.register(input);
+        request.getSession();
+        request.changeSessionId();
+        request.getSession().setAttribute("employeeId", employee.getEmp_id());
+        return EmployeeView.of(employee);
     }
-
-    @GetMapping("/findbyid/{emp_id}")
-    public Employee getEmpByEmpId(@PathVariable long emp_id) {
-        return employeeService.getEmployeeById(emp_id);
+    @PostMapping("/login")
+    public EmployeeView login(@RequestBody LoginRequest input, HttpServletRequest request) {
+        Employee employee = employees.login(input.emp_id(), input.password());
+        request.getSession();
+        request.changeSessionId();
+        request.getSession().setAttribute("employeeId", employee.getEmp_id());
+        return EmployeeView.of(employee);
     }
-
-    @DeleteMapping("/delete/{emp_id}")
-    public String deleteEmployee(@PathVariable long emp_id) {
-        return employeeService.deleteById(emp_id);
+    @GetMapping("/me")
+    public EmployeeView me(HttpServletRequest request) { return EmployeeView.of(employees.find(currentId(request))); }
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
     }
-
-    @PutMapping("/update/{emp_id}")
-    public String updateById(
-            @PathVariable long emp_id,
-            @RequestBody Employee employee) {
-        return employeeService.updateById(emp_id, employee);
+    public static long currentId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || !(session.getAttribute("employeeId") instanceof Long id))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please sign in");
+        return id;
     }
 }

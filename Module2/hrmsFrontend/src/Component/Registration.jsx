@@ -1,131 +1,30 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { api } from '../api'
 
-import React from 'react';
-
-function Registration() {
-    const [empId, setEmpId] = React.useState("");
-    const [empName, setEmpName] = React.useState("");
-    const [empDesignation, setEmpDesignation] = React.useState("");
-    const [empStack, setEmpStack] = React.useState("");
-    const [empEmail, setEmpEmail] = React.useState("");
-    const [empPassword, setEmpPassword] = React.useState("");
-
-    async function sendData(e) {
-        e.preventDefault();
-
-        try {
-            const server = await fetch("http://localhost:8080/v1/user/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    emp_id: Number(empId),
-                    emp_name: empName,
-                    designation: empDesignation,
-                    stack: empStack,
-                    email: empEmail,
-                    password: empPassword
-                })
-            });
-
-            const status = await server.text();
-
-            if (server.ok) {
-                alert("Registration successful!");
-                console.log(status);
-            } else {
-                alert("Registration failed: " + status);
-                console.error(status);
-            }
-        } catch (error) {
-            console.error("Error connecting to backend:", error);
-            alert("Unable to connect to Spring Boot. Check the backend server.");
-        }
-    }
-
-    return (
-        <div>
-            <form onSubmit={sendData}>
-
-                <div className="form-group">
-                    <label htmlFor="empName">Name</label>
-                    <input
-                        id="empName"
-                        onChange={(e) => setEmpName(e.target.value)}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter name"
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="empId">Emp_ID</label>
-                    <input
-                        id="empId"
-                        onChange={(e) => setEmpId(e.target.value)}
-                        type="number"
-                        className="form-control"
-                        placeholder="Enter Employee Id"
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="empDesignation">Designation</label>
-                    <input
-                        id="empDesignation"
-                        onChange={(e) => setEmpDesignation(e.target.value)}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Designation"
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="empStack">Stack</label>
-                    <input
-                        id="empStack"
-                        onChange={(e) => setEmpStack(e.target.value)}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Stack"
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="empEmail">Email address</label>
-                    <input
-                        id="empEmail"
-                        onChange={(e) => setEmpEmail(e.target.value)}
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter email"
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="empPassword">Password</label>
-                    <input
-                        id="empPassword"
-                        onChange={(e) => setEmpPassword(e.target.value)}
-                        type="password"
-                        className="form-control"
-                        placeholder="Enter password"
-                        required
-                    />
-                </div>
-
-                <button type="submit" className="btn btn-primary">
-                    Submit
-                </button>
-
-            </form>
-        </div>
-    );
+export default function Registration() {
+  const navigate = useNavigate()
+  const [form, setForm] = useState({ emp_id: '', emp_name: '', designation: '', stack: '', email: '', password: '' })
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+  function change(event) { setForm({ ...form, [event.target.name]: event.target.value }) }
+  async function submit(event) {
+    event.preventDefault(); setError(''); setBusy(true)
+    try {
+      await api('/v1/user/register', { method: 'POST', body: JSON.stringify({ ...form, emp_id: Number(form.emp_id) }) })
+      navigate('/dashboard', { replace: true })
+    } catch (e) { setError(e.message) } finally { setBusy(false) }
+  }
+  return <main className="auth-layout">
+    <section className="auth-aside"><Link className="brand light" to="/">● <span>people<span className="brand-accent">flow</span></span></Link><div><span className="eyebrow">A BETTER WAY TO WORK</span><h1>Your day, all in one place.</h1><p>Create your profile, check in each day, and keep your attendance in view.</p></div><small>PEOPLEFLOW · HRMS</small></section>
+    <section className="auth-panel"><div className="auth-card"><span className="eyebrow">GET STARTED</span><h2>Create your account</h2><p className="subtle">A few details and your workspace is ready.</p><form onSubmit={submit} className="register-grid">
+      <div><label htmlFor="emp_name">Full name</label><input id="emp_name" name="emp_name" value={form.emp_name} onChange={change} required placeholder="Your name" /></div>
+      <div><label htmlFor="emp_id">Employee ID</label><input id="emp_id" name="emp_id" type="number" min="1" value={form.emp_id} onChange={change} required placeholder="e.g. 1001" /></div>
+      <div><label htmlFor="designation">Designation</label><input id="designation" name="designation" value={form.designation} onChange={change} placeholder="e.g. Developer" /></div>
+      <div><label htmlFor="stack">Team / stack</label><input id="stack" name="stack" value={form.stack} onChange={change} placeholder="e.g. Engineering" /></div>
+      <div className="span-2"><label htmlFor="email">Work email</label><input id="email" name="email" type="email" value={form.email} onChange={change} required placeholder="you@company.com" /></div>
+      <div className="span-2"><label htmlFor="reg-password">Password</label><input id="reg-password" name="password" type="password" minLength="8" value={form.password} onChange={change} required placeholder="At least 8 characters" /></div>
+      {error && <p className="error span-2" role="alert">{error}</p>}<button className="primary full span-2" disabled={busy}>{busy ? 'Creating account…' : 'Create account →'}</button>
+    </form><p className="auth-switch">Already have an account? <Link to="/login">Sign in</Link></p></div></section>
+  </main>
 }
-
-export default Registration;
