@@ -3,7 +3,7 @@ package com.abes.hrms.repository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EmpRepoImp implements EmpRepo {
+public class EmpRepoImp implements com.abes.hrms.repository.EmpRepo {
     @Override
     public double squareroot(double d) {
         double result = Math.sqrt(d);
