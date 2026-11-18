@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/posts")
+@RequestMapping("/api/v1/posts")
 
 @AllArgsConstructor
 public class PostController {
@@ -26,7 +26,7 @@ public class PostController {
     }
 
     @PostMapping
-    @SecurityRequirement(name = "jwt-demo-api")
+    @SecurityRequirement(name="jwt-demo-api")
     public ResponseEntity<PostResponse> create(@Valid @RequestBody PostRequest req, Authentication auth) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(postService.addPost(req, auth.getName()));

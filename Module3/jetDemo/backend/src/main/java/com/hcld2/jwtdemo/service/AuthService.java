@@ -23,54 +23,38 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
-    // ============================
     // USER REGISTRATION
-    // ============================
-
     @Transactional
     public StatusResponse registerUser(AuthRequest authRequest) {
 
-        String username = authRequest.username().trim();
-        String password = authRequest.password();
-
-        // Check existing username
-        if (users.findByUsername(username).isPresent()) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Username already exists"
+        // Check if username already exists
+        if (users.findByUsername(authRequest.username()).isPresent()) {
+            return new StatusResponse(
+                    "error",
+                    "Username already in use"
             );
         }
 
-        // Encrypt password
-        String encodedPassword = encoder.encode(password);
-
-        // Create new user
+        // Encrypt password using BCrypt
         User user = new User(
-                username,
-                encodedPassword
+                authRequest.username(),
+                encoder.encode(authRequest.password())
         );
 
+        // Save user in database
         users.save(user);
 
         return new StatusResponse(
-                "success",
-                "User registered successfully. Please login."
+                "message",
+                "User successfully registered"
         );
     }
 
-
-    // ============================
     // USER LOGIN
-    // ============================
-
     public AuthResponse login(AuthRequest req) {
 
-        String username = req.username().trim();
-        String password = req.password();
-
-        // Find user
-        User user = users.findByUsername(username)
+        // Find user by username
+        User user = users.findByUsername(req.username())
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.UNAUTHORIZED,
@@ -79,18 +63,20 @@ public class AuthService {
                 );
 
         // Verify password
-        if (!encoder.matches(password, user.getPassword())) {
-
+        if (!encoder.matches(
+                req.password(),
+                user.getPassword()
+        )) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
                     "Invalid username or password"
             );
         }
 
-        // Generate JWT
+        // Generate JWT token
         String token = jwt.generateToken(user.getUsername());
 
-        // Return authentication response
+        // Return JWT and username
         return new AuthResponse(
                 token,
                 user.getUsername()

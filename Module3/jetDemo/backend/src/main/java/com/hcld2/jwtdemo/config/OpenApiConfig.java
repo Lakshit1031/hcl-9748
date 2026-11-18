@@ -9,30 +9,31 @@ import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
- @Configuration
-    @OpenAPIDefinition(
-            info = @Info(
-                    title = "Demo API",
-                    version = "Version 1.0",
-                    contact = @Contact(
-                            name = "Lakshit",
-                            email = "lakshitteotia54@gmail.com",
-                            url = "https://xtranity.com"
-                    ),
-                    license = @License(
-                            name = "Apache 2.0",
-                            url = "https://www.apache.org/licenses/LICENSE-2.0"
-                    ),
-                    termsOfService = "https://hcl.com/TOS",
-                    description = "Spring Boot RESTful API Demo by Dhanesh"
-            )
-    )
-    @SecurityScheme(
-            name = "jwt-demo-api",
-            scheme = "bearer",
-            type = SecuritySchemeType.HTTP,
-            in = SecuritySchemeIn.HEADER,
-            bearerFormat = "JWT"
-    )
-    public class OpenApiConfig {
-    }
+@Configuration
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Demo API",
+                version = "Version 1.0",
+                contact = @Contact(
+                        name = "HCL Training Module",
+                        email = "demo@hcl.com",
+                        url = "https://hcl-training.com"
+                ),
+                license = @License(
+                        name = "Apache 2.0",
+                        url = "https://www.apache.org/licenses/LICENSE-2.0"
+                ),
+                termsOfService = "https://hcl.com/TOS",
+                description = "Spring Boot RESTful API Demo In HCL Training"
+        )
+)
+@SecurityScheme(
+        name = "jwt-demo-api",
+        scheme = "bearer",
+        type = SecuritySchemeType.HTTP,
+        in = SecuritySchemeIn.HEADER,
+        bearerFormat = "JWT"
+)
+public class OpenApiConfig {
+}
+

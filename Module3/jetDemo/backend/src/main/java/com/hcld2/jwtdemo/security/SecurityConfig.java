@@ -1,12 +1,14 @@
 
 package com.hcld2.jwtdemo.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,13 +21,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
+    public SecurityFilterChain securitySecurityFilterChain(
             HttpSecurity http) throws Exception {
 
         http
@@ -39,27 +42,29 @@ public class SecurityConfig {
                 )
 
                 .headers(headers ->
-                        headers.frameOptions(frame ->
-                                frame.sameOrigin()
-                        )
+                        headers.frameOptions(frame -> frame.sameOrigin())
                 )
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public authentication endpoints
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/auth/register",
-                                "/api/v1/auth/login"
-                        ).permitAll()
+                        // Login and registration are public
+                        .requestMatchers("/api/v1/auth/**").permitAll()
 
-                        // Public post listing
+                        // Anyone can read posts
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/v1/posts"
+                                "/api/v1/posts",
+                                "/api/v1/posts/**"
                         ).permitAll()
 
-                        // H2 and Swagger
+                        // Creating posts requires JWT
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/posts",
+                                "/api/v1/posts/**"
+                        ).authenticated()
+
+                        // Swagger and H2
                         .requestMatchers(
                                 "/h2-console/**",
                                 "/swagger-ui/**",
@@ -67,14 +72,18 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
 
-                        // Creating posts requires JWT
-                        .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/v1/posts"
-                        ).authenticated()
-
                         // Everything else requires authentication
                         .anyRequest().authenticated()
+                )
+
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(
+                                (request, response, ex) ->
+                                        response.sendError(
+                                                HttpServletResponse.SC_UNAUTHORIZED,
+                                                "Unauthorized"
+                                        )
+                        )
                 )
 
                 .addFilterBefore(
@@ -93,23 +102,24 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration config = new CorsConfiguration();
+        CorsConfiguration cfg = new CorsConfiguration();
 
-        config.setAllowedOrigins(
+        // Do not add trailing slash
+        cfg.setAllowedOrigins(
                 List.of("http://localhost:5173")
         );
 
-        config.setAllowedMethods(
+        cfg.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
         );
 
-        config.setAllowedHeaders(List.of("*"));
+        cfg.setAllowedHeaders(List.of("*"));
 
-        UrlBasedCorsConfigurationSource source =
+        UrlBasedCorsConfigurationSource src =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", config);
+        src.registerCorsConfiguration("/**", cfg);
 
-        return source;
+        return src;
     }
 }
