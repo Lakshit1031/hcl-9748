@@ -1,43 +1,20 @@
-
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "./api";
 import AuthForm from "./AuthForm";
 import PostForm from "./PostForm";
-import "./App.css";
 
 const App = () => {
-  const [user, setUser] = useState(
-    localStorage.getItem("username")
-  );
-
+  const [user, setUser] = useState(localStorage.getItem("username"));
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  const loadPosts = useCallback(async () => {
-    try {
-      setError("");
-      const { data } = await api.get("/posts");
-      setPosts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        "Unable to load posts. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
+  const loadPosts = async () => {
+    const { data } = await api.get("/posts");
+    setPosts(data);
+  };
   useEffect(() => {
     loadPosts();
-  }, [loadPosts]);
-
-  const handleLogin = (username) => {
-    setUser(username);
-    loadPosts();
-  };
-
+    console.log(posts);
+  }, []);
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
@@ -45,190 +22,97 @@ const App = () => {
   };
 
   return (
-    <div className="app-container">
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            JWT Blog Demo
+          </h1>
 
-      {/* Navigation */}
-      <header className="navbar">
-        <div className="navbar-inner">
-
-          <a href="/" className="brand">
-            <span className="brand-icon">J</span>
-            <span>JWT<span className="brand-highlight">Blog</span></span>
-          </a>
-
-          <div className="navbar-right">
-            {user ? (
-              <>
-                <div className="user-profile">
-                  <div className="user-avatar">
-                    {user.charAt(0).toUpperCase()}
-                  </div>
-                  <span>{user}</span>
-                </div>
-
-                <button
-                  className="logout-btn"
-                  onClick={logout}
-                >
-                  Logout <span>↗</span>
-                </button>
-              </>
-            ) : (
-              <span className="nav-caption">
-                Share your thoughts
-              </span>
-            )}
-          </div>
-
+          {user && (
+            <button
+              onClick={logout}
+              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </header>
 
-      <main className="main-content">
-
-        {/* Hero Section */}
-        <section className="hero-section">
-          <div className="hero-label">
-            <span className="live-dot"></span>
-            YOUR SPACE TO WRITE
-          </div>
-
-          <h1>
-            Ideas worth <span>sharing.</span>
-          </h1>
-
-          <p>
-            Write, publish, and discover interesting thoughts
-            from your community.
-          </p>
-        </section>
-
-        {/* Authentication */}
-        {!user ? (
-          <section className="auth-section">
-            <AuthForm onLogin={handleLogin} />
-          </section>
-        ) : (
-          <>
-            {/* Welcome */}
-            <section className="welcome-section">
-              <div>
-                <p className="welcome-eyebrow">
-                  YOUR DASHBOARD
-                </p>
-                <h2>
-                  Welcome back, {user}!
-                </h2>
-                <p>
-                  Ready to share something interesting today?
-                </p>
-              </div>
-
-              <div className="welcome-icon">✍️</div>
-            </section>
-
-            {/* Create Post */}
-            <section className="editor-section">
-              <div className="section-heading">
-                <div>
-                  <span className="section-number">01</span>
-                  <h2>Create something new</h2>
-                </div>
-                <span className="section-subtitle">
-                  YOUR NEXT STORY STARTS HERE
+      {/* Main Content Area */}
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        {/* Authentication and Post Form */}
+        <section className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          {user ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between bg-slate-50 px-4 py-3 rounded-xl border border-slate-100">
+                <span className="text-sm font-medium text-slate-600">
+                  Logged in as{" "}
+                  <strong className="text-slate-900 font-semibold">
+                    {user}
+                  </strong>
                 </span>
               </div>
 
               <PostForm onCreated={loadPosts} />
-            </section>
-          </>
-        )}
-
-        {/* Posts */}
-        <section className="posts-section">
-
-          <div className="section-heading">
-            <div>
-              <span className="section-number">02</span>
-              <h2>Explore posts</h2>
             </div>
+          ) : (
+            <AuthForm onLogin={setUser} />
+          )}
+        </section>
 
-            <span className="post-count">
-              {posts.length} {posts.length === 1 ? "POST" : "POSTS"}
+        {/* All Posts Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">All Posts</h2>
+
+            <span className="text-xs font-semibold uppercase tracking-wider bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full">
+              {posts.length} {posts.length === 1 ? "Post" : "Posts"}
             </span>
           </div>
 
-          {error && (
-            <div className="app-error" role="alert">
-              {error}
-              <button onClick={loadPosts}>Retry</button>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="empty-state">
-              <div className="loading-spinner"></div>
-              <p>Loading stories...</p>
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">📝</div>
-              <h3>No stories published yet</h3>
-              <p>
-                Be the first to share an idea with the community.
+          {posts.length === 0 && (
+            <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+              <p className="text-slate-500 text-sm">
+                No posts yet. Be the first to publish one!
               </p>
             </div>
-          ) : (
-            <div className="posts-grid">
-              {posts.map((post) => (
-                <article className="post-card" key={post.id}>
-                  <div className="post-card-top">
-                    <span className="post-tag">COMMUNITY STORY</span>
-                    <span className="post-symbol">✦</span>
-                  </div>
-
-                  <h3>{post.title}</h3>
-
-                  <p className="post-content">
-                    {post.content}
-                  </p>
-
-                  <div className="post-divider"></div>
-
-                  <div className="post-meta">
-                    <div className="post-author">
-                      <div className="author-avatar">
-                        {post.author?.charAt(0).toUpperCase() || "U"}
-                      </div>
-
-                      <div>
-                        <strong>{post.author || "Unknown"}</strong>
-                        <span>Author</span>
-                      </div>
-                    </div>
-
-                    <time dateTime={post.createdAt}>
-                      {post.createdAt
-                        ? new Date(post.createdAt).toLocaleDateString()
-                        : ""}
-                    </time>
-                  </div>
-                </article>
-              ))}
-            </div>
           )}
 
+          <div className="space-y-4">
+            {posts.map((p) => (
+              <article
+                key={p.id}
+                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow space-y-3"
+              >
+                <h2 className="text-xl font-semibold text-slate-900">
+                  {p.title}
+                </h2>
+
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+                  {p.content}
+                </p>
+
+                <div className="flex flex-wrap items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-500">
+                  <span className="font-medium text-slate-700">
+                    By{" "}
+                    <span className="text-indigo-600 font-semibold">
+                      {p.author}
+                    </span>
+                  </span>
+
+                  <time dateTime={p.createdAt} className="text-slate-400">
+                    {new Date(p.createdAt).toLocaleString()}
+                  </time>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
-
       </main>
-
-      {/* Footer */}
-      <footer className="app-footer">
-        <p>JWT Blog © 2026</p>
-        <span>Built with React & Spring Boot</span>
-      </footer>
-
     </div>
   );
 };
-
 export default App;
