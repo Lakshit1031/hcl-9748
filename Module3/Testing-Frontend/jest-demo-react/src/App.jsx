@@ -1,7 +1,12 @@
+import StudentForm from "./components/StudentForm";
+
 const App = () => {
   return (
-    <h1>Jesting in React</h1>
-  )
-}
+    <div>
+      <h1>Welcome to Student Management</h1>
+      <StudentForm />
+    </div>
+  );
+};
 
 export default App
